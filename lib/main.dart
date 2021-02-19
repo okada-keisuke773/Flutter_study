@@ -1,126 +1,69 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
+class Todo {
+  final String title;
+  final String description;
+
+  Todo({@required this.title, @required this.description})
+      : assert(title != null),
+        assert(description != null);
 }
 
-class MyApp extends StatelessWidget {
+void main() => runApp(MaterialApp(
+      title: 'Navigation',
+      home: TodoScreen(
+        todos: List<Todo>.generate(
+            15,
+            (i) => Todo(
+                  title: 'TODO $i',
+                  description: 'TODO $i の詳細',
+                )),
+      ),
+    ));
+
+class TodoScreen extends StatelessWidget {
+  final List<Todo> _todos;
+  TodoScreen({Key key, @required List<Todo> todos})
+      : assert(todos != null),
+        this._todos = todos,
+        super(key: key);
+
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        title: 'Pavlova Demo',
-        theme: ThemeData(primarySwatch: Colors.blue),
-        home: Pavlova(),
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text('TODOリスト'),
+        ),
+        body: ListView.builder(
+          itemCount: _todos.length,
+          itemBuilder: (context, index) => ListTile(
+              title: Text(_todos[index].title),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailScreen(todo: _todos[index])),
+                );
+              }),
+        ),
       );
 }
 
-class Pavlova extends StatelessWidget {
+class DetailScreen extends StatelessWidget {
+  final Todo _todo;
+
+  DetailScreen({Key key, @required Todo todo})
+      : assert(todo != null),
+        this._todo = todo,
+        super(key: key);
+
   @override
-  Widget build(BuildContext context) {
-    final stars = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.star, color: Colors.green[500]),
-        Icon(Icons.star, color: Colors.green[500]),
-        Icon(Icons.star, color: Colors.green[500]),
-        Icon(Icons.star, color: Colors.black),
-        Icon(Icons.star, color: Colors.black),
-      ],
-    );
-
-    final ratings = Container(
-      padding: EdgeInsets.all(20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          stars,
-          Text(
-            '170 Review',
-            style: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w800,
-              fontFamily: 'Roboto',
-              letterSpacing: 0.5,
-              fontSize: 20,
-            ),
-          )
-        ],
-      ),
-    );
-
-    final descTextStyle = TextStyle(
-      color: Colors.black,
-      fontWeight: FontWeight.w800,
-      fontFamily: 'Roboto',
-      letterSpacing: 0.5,
-      fontSize: 18,
-      height: 2,
-    );
-
-    final iconList = DefaultTextStyle.merge(
-      style: descTextStyle,
-      child: Container(
-        padding: EdgeInsets.all(20),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Column(
-              children: [
-                Icon(
-                  Icons.kitchen,
-                  color: Colors.green[500],
-                ),
-                Text('PREP:'),
-                Text('20 min'),
-              ],
-            ),
-            Column(
-              children: [
-                Icon(
-                  Icons.timer,
-                  color: Colors.green[500],
-                ),
-                Text('COOK:'),
-                Text('1 hr'),
-              ],
-            ),
-            Column(
-              children: [
-                Icon(
-                  Icons.restaurant,
-                  color: Colors.green[500],
-                ),
-                Text('FEEDS:'),
-                Text('4-6'),
-              ],
-            ),
-          ],
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          title: Text(_todo.title),
         ),
-      ),
-    );
-
-    final leftColumn = Container(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('titleText'),
-          Text('subTitle'),
-          ratings,
-          iconList,
-        ],
-      ),
-    );
-
-    final sample = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          child: leftColumn,
+        body: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Text(_todo.description),
         ),
-      ],
-    );
-
-    return Scaffold(
-      body: Center(child: sample),
-    );
-  }
+      );
 }
