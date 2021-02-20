@@ -2,46 +2,45 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(MaterialApp(
       title: 'Navigation',
-      home: MainScreen(),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('TapBox'),
+        ),
+        body: Center(
+          child: TapBoxA(),
+        ),
+      ),
     ));
 
-class MainScreen extends StatelessWidget {
+class TapBoxA extends StatefulWidget {
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('Main Screen'),
-        ),
-        body: GestureDetector(
-          onTap: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (_) => DetailScreen()));
-          },
-          //Heroウィジェットで画像クリック時のアニメーションを追加
-          //tagは画面遷移先のHeroと同じにしないと読み込まれない
-          child: Hero(
-            tag: 'imageHero',
-            child: Image.asset(
-              'images/a.jpg',
-              width: 180.0,
-              height: 180.0,
+  _TapBoxAState createState() => _TapBoxAState();
+}
+
+class _TapBoxAState extends State<TapBoxA> {
+  bool _active = false;
+
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: _handleTap,
+        child: Container(
+          child: Center(
+            child: Text(
+              _active ? 'Active' : 'Inactive',
+              style: TextStyle(fontSize: 32.0, color: Colors.white),
             ),
+          ),
+          width: 200.0,
+          height: 200.0,
+          decoration: BoxDecoration(
+            color: _active ? Colors.lightGreen[700] : Colors.grey[600],
           ),
         ),
       );
-}
 
-class DetailScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        body: GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Center(
-              child: Hero(
-            tag: 'imageHero',
-            child: Image.asset('images/a.jpg'),
-          )),
-        ),
-      );
+  void _handleTap() {
+    setState(() {
+      _active = !_active;
+    });
+  }
 }
