@@ -1,69 +1,75 @@
 import 'package:flutter/material.dart';
 
-class Todo {
-  final String title;
-  final String description;
-
-  Todo({@required this.title, @required this.description})
-      : assert(title != null),
-        assert(description != null);
-}
-
 void main() => runApp(MaterialApp(
       title: 'Navigation',
-      home: TodoScreen(
-        todos: List<Todo>.generate(
-            15,
-            (i) => Todo(
-                  title: 'TODO $i',
-                  description: 'TODO $i の詳細',
-                )),
-      ),
+      home: HomeScreen(),
     ));
 
-class TodoScreen extends StatelessWidget {
-  final List<Todo> _todos;
-  TodoScreen({Key key, @required List<Todo> todos})
-      : assert(todos != null),
-        this._todos = todos,
-        super(key: key);
-
+class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text('TODOリスト'),
+          title: Text('Demo'),
         ),
-        body: ListView.builder(
-          itemCount: _todos.length,
-          itemBuilder: (context, index) => ListTile(
-              title: Text(_todos[index].title),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DetailScreen(todo: _todos[index])),
-                );
-              }),
+        body: Center(
+          child: SelectionButton(),
         ),
       );
 }
 
-class DetailScreen extends StatelessWidget {
-  final Todo _todo;
+class SelectionButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => RaisedButton(
+        onPressed: () {
+          _navigateAndDisplaySelection(context);
+        },
+        child: Text('オプションを選択'),
+      );
 
-  DetailScreen({Key key, @required Todo todo})
-      : assert(todo != null),
-        this._todo = todo,
-        super(key: key);
+  Future<void> _navigateAndDisplaySelection(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SelectionScreen()),
+    );
 
+    Scaffold.of(context)
+      ..removeCurrentSnackBar() //すでに表示されているスナックバーがある場合は削除
+      ..showSnackBar(SnackBar(content: Text(result))); //新しいスナックバーを表示
+  }
+}
+
+class SelectionScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: Text(_todo.title),
+          title: Text('選択してください'),
         ),
-        body: Padding(
-          padding: EdgeInsets.all(16.0),
-          child: Text(_todo.description),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: RaisedButton(
+                  onPressed: () {
+                    //選択肢１というデータとともに元の画面に戻る処理
+                    Navigator.pop(context, '選択肢1');
+                  },
+                  child: Text('選択肢1'),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: RaisedButton(
+                  onPressed: () {
+                    //選択肢2というデータとともに元の画面に戻る処理
+                    Navigator.pop(context, '選択肢2');
+                  },
+                  child: Text('選択肢2'),
+                ),
+              ),
+            ],
+          ),
         ),
       );
 }
