@@ -1,46 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/animation.dart';
 
-void main() => runApp(MaterialApp(
-      title: 'Navigation',
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('TapBox'),
-        ),
-        body: Center(
-          child: TapBoxA(),
-        ),
-      ),
-    ));
+void main() => runApp(LogoApp());
 
-class TapBoxA extends StatefulWidget {
-  @override
-  _TapBoxAState createState() => _TapBoxAState();
+class LogoApp extends StatefulWidget {
+  _LogoAppState createState() => _LogoAppState();
 }
 
-class _TapBoxAState extends State<TapBoxA> {
-  bool _active = false;
+class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
+  Animation<double> animation;
+  AnimationController controller;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-        onTap: _handleTap,
-        child: Container(
-          child: Center(
-            child: Text(
-              _active ? 'Active' : 'Inactive',
-              style: TextStyle(fontSize: 32.0, color: Colors.white),
-            ),
-          ),
-          width: 200.0,
-          height: 200.0,
-          decoration: BoxDecoration(
-            color: _active ? Colors.lightGreen[700] : Colors.grey[600],
-          ),
-        ),
-      );
+  void initState() {
+    super.initState();
+    controller =
+        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    animation = Tween<double>(begin: 0, end: 300).animate(controller)
+      ..addListener(() {
+        setState(() {
+          // The state that has changed here is the animation object’s value.
+        });
+      });
+    controller.forward();
+  }
 
-  void _handleTap() {
-    setState(() {
-      _active = !_active;
-    });
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 10),
+        height: animation.value,
+        width: animation.value,
+        child: FlutterLogo(),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 }
