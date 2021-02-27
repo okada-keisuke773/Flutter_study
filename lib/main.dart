@@ -3,33 +3,29 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(LogoApp());
 
-class LogoWidget extends StatelessWidget {
-  Widget build(BuildContext context) => Container(
-        margin: EdgeInsets.symmetric(vertical: 10),
-        child: FlutterLogo(),
-      );
-}
+class AnimatedLogo extends AnimatedWidget {
+  // Make the Tweens static because they don't change.
+  static final _opacityTween = Tween<double>(begin: 0.1, end: 1);
+  static final _sizeTween = Tween<double>(begin: 0, end: 300);
 
-class GrowTransition extends StatelessWidget {
-  GrowTransition({this.child, this.animation});
+  AnimatedLogo({Key key, Animation<double> animation})
+      : super(key: key, listenable: animation);
 
-  final Widget child;
-  final Animation<double> animation;
-
-  Widget build(BuildContext context) => Center(
-        child: AnimatedBuilder(
-          animation: animation,
-          builder: (context, child) => Container(
-            height: animation.value,
-            width: animation.value,
-            child: child,
-          ),
-          child: child,
+  Widget build(BuildContext context) {
+    final animation = listenable as Animation<double>;
+    return Center(
+      child: Opacity(
+        opacity: _opacityTween.evaluate(animation),
+        child: Container(
+          margin: EdgeInsets.symmetric(vertical: 10),
+          height: _sizeTween.evaluate(animation),
+          width: _sizeTween.evaluate(animation),
+          child: FlutterLogo(),
         ),
-      );
+      ),
+    );
+  }
 }
-
-// #enddocregion AnimatedLogo
 
 class LogoApp extends StatefulWidget {
   _LogoAppState createState() => _LogoAppState();
@@ -44,28 +40,19 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
     super.initState();
     controller =
         AnimationController(duration: const Duration(seconds: 2), vsync: this);
-    animation = Tween<double>(begin: 0, end: 300).animate(controller)
-      ..addStatusListener(_onAnimationStatusChanged);
+    animation = CurvedAnimation(parent: controller, curve: Curves.easeIn)
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          controller.reverse();
+        } else if (status == AnimationStatus.dismissed) {
+          controller.forward();
+        }
+      });
     controller.forward();
   }
 
-  void _onAnimationStatusChanged(AnimationStatus status) {
-    switch (status) {
-      case AnimationStatus.completed:
-        controller.reverse();
-        break;
-      case AnimationStatus.dismissed:
-        controller.forward();
-        break;
-      default:
-    }
-  }
-
   @override
-  Widget build(BuildContext context) => GrowTransition(
-        child: LogoWidget(),
-        animation: animation,
-      );
+  Widget build(BuildContext context) => AnimatedLogo(animation: animation);
 
   @override
   void dispose() {
