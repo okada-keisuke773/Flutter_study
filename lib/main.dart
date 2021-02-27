@@ -3,23 +3,32 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(LogoApp());
 
-// #docregion AnimatedLogo
-class AnimatedLogo extends AnimatedWidget {
-  AnimatedLogo({Key key, Animation<double> animation})
-      : super(key: key, listenable: animation);
-
-  Widget build(BuildContext context) {
-    final animation = listenable as Animation<double>;
-    return Center(
-      child: Container(
+class LogoWidget extends StatelessWidget {
+  Widget build(BuildContext context) => Container(
         margin: EdgeInsets.symmetric(vertical: 10),
-        height: animation.value,
-        width: animation.value,
         child: FlutterLogo(),
-      ),
-    );
-  }
+      );
 }
+
+class GrowTransition extends StatelessWidget {
+  GrowTransition({this.child, this.animation});
+
+  final Widget child;
+  final Animation<double> animation;
+
+  Widget build(BuildContext context) => Center(
+        child: AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) => Container(
+            height: animation.value,
+            width: animation.value,
+            child: child,
+          ),
+          child: child,
+        ),
+      );
+}
+
 // #enddocregion AnimatedLogo
 
 class LogoApp extends StatefulWidget {
@@ -40,7 +49,10 @@ class _LogoAppState extends State<LogoApp> with SingleTickerProviderStateMixin {
   }
 
   @override
-  Widget build(BuildContext context) => AnimatedLogo(animation: animation);
+  Widget build(BuildContext context) => GrowTransition(
+        child: LogoWidget(),
+        animation: animation,
+      );
 
   @override
   void dispose() {
