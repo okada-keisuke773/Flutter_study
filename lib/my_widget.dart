@@ -7,6 +7,8 @@ import 'no_ref_tolmportant_data_widget.dart';
 
 class MyWidget extends StatefulWidget {
   final String title;
+  _MyWidgetState __myWidgetState;
+  _MyWidgetState get state => __myWidgetState;
 
   MyWidget({Key key, this.title}) : super(key: key);
   @override

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_practice/ImportantData.dart';
+import 'package:flutter_practice/my_widget.dart';
 import 'package:flutter_practice/yet_another_widget.dart';
 
 class AnotherWidget extends StatefulWidget {
@@ -20,15 +21,15 @@ class AnotherWidgetState extends State<AnotherWidget> {
   @override
   Widget build(BuildContext context) {
     debugPrint("AnotherWidget is built");
+    final MyWidget myWidget = context.ancestorWidgetOfExactType(MyWidget);
     return Container(
-      height: 400,
-      decoration: BoxDecoration(color: Colors.cyan),
-      child: Column(
-        children: <Widget>[
-          Text('AnotherWidget'),
+        height: 400,
+        decoration: BoxDecoration(color: Colors.cyan),
+        child: Column(children: <Widget>[
+          Text("AnotherWidget"),
+          Text(
+              "Parent Direct Reference ${myWidget.state?.importantData?.count ?? "empty"}"),
           YetAnotherWidget(importantData: _importantData)
-        ],
-      ),
-    );
+        ]));
   }
 }
