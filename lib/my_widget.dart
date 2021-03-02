@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import 'ImportantData.dart';
 import 'another_widget.dart';
+import 'no_ref_tolmportant_data_widget.dart';
 
 class MyWidget extends StatefulWidget {
   final String title;
@@ -15,6 +16,7 @@ class MyWidget extends StatefulWidget {
 class _MyWidgetState extends State<MyWidget> {
   //ImportantDataを生成
   ImportantData importantData = ImportantData();
+  GlobalKey<AnotherWidgetState> anotherWidgetStateGlobalKey = GlobalKey();
 
   _doImportantThings() {
     setState(() {
@@ -31,7 +33,11 @@ class _MyWidgetState extends State<MyWidget> {
         child: Column(
           children: <Widget>[
             Text("MyWidget"),
-            AnotherWidget(importantData: importantData)
+            Text(
+                'Another Widget Direct Reference ${anotherWidgetStateGlobalKey.currentState?.widget?.importantData?.count ?? "empty"}'),
+            AnotherWidget(
+                key: anotherWidgetStateGlobalKey, importantData: importantData),
+            NoRefTolmportanDataWidget()
           ],
         ),
       ),
